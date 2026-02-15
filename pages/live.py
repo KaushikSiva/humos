@@ -334,6 +334,8 @@ def _action_from_object_state(name: str, state: str | None = None) -> str:
         or obj_token.endswith("glass")
         or obj_norm == "glass"
     ):
+        if stv in {"drinking_pepsi"}:
+            return "DRINK PEPSI"
         if stv in {"drinking"}:
             return "DRINK WATER"
         if stv in {"holding"}:
@@ -356,6 +358,8 @@ def _action_from_object_state(name: str, state: str | None = None) -> str:
             return f"IDLE {obj.upper()}"
         return f"OPEN {obj.upper()}"
     if obj_norm in {"person", "scene", ""}:
+        if stv == "drinking_pepsi":
+            return "DRINK PEPSI"
         if stv == "wave":
             return "WAVE"
         if stv == "point":
@@ -707,6 +711,7 @@ class LiveVideoProcessor(VideoProcessorBase):
                         sv = (state_value or "").strip().lower()
                         rank = {
                             "using_phone": 1.0,
+                            "drinking_pepsi": 1.0,
                             "drinking": 1.0,
                             "wave": 0.9,
                             "point": 0.8,
@@ -774,7 +779,7 @@ class LiveVideoProcessor(VideoProcessorBase):
                             self._live_last_action_frame = self._frame_count
                             non_idle_action_detected = True
                             self._live_no_action_cycles = 0
-                            if action_text in {"DRINK WATER", "USE PHONE"}:
+                            if action_text in {"DRINK WATER", "DRINK PEPSI", "USE PHONE"}:
                                 # Keep action stable briefly to avoid flicker.
                                 self._live_action_hold = 4
                         elif self._live_action_hold <= 0:
@@ -915,7 +920,7 @@ def _render_results(results: list[FrameResult], info: dict, nav_timeline: Naviga
                 )
         if timing_rows:
             timing_rows = sorted(timing_rows, key=lambda x: x["mean_s"], reverse=True)
-            st.dataframe(timing_rows, use_container_width=True, hide_index=True)
+            st.dataframe(timing_rows, width='stretch', hide_index=True)
 
     frame_idx = st.slider(
         "Frame",
@@ -993,38 +998,38 @@ def _render_results(results: list[FrameResult], info: dict, nav_timeline: Naviga
                     )
             if all_transitions:
                 all_transitions.sort(key=lambda x: x["Frame"])
-                st.dataframe(all_transitions, use_container_width=True)
+                st.dataframe(all_transitions, width='stretch')
             else:
                 st.info("No state transitions detected.")
         else:
             st.info("No navigation objects detected.")
 
     with tab_map["Original"]:
-        st.image(cv2.cvtColor(r.frame, cv2.COLOR_BGR2RGB), caption=f"Frame {r.frame_idx}", use_container_width=True)
+        st.image(cv2.cvtColor(r.frame, cv2.COLOR_BGR2RGB), caption=f"Frame {r.frame_idx}", width='stretch')
 
     with tab_map["Combined"]:
         vis = draw_all(r.frame, r)
-        st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"Combined - Frame {r.frame_idx}", use_container_width=True)
+        st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"Combined - Frame {r.frame_idx}", width='stretch')
 
     if "Tracking" in tab_map:
         with tab_map["Tracking"]:
             if r.tracking:
                 vis = draw_tracking(r.frame, r.tracking)
-                st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.tracking.boxes)} tracked objects", use_container_width=True)
+                st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.tracking.boxes)} tracked objects", width='stretch')
             else:
                 st.info("No tracking results for this frame.")
 
     with tab_map["Detections"]:
         if r.detection:
             vis = draw_detections(r.frame, r.detection)
-            st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.detection.boxes)} detections", use_container_width=True)
+            st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.detection.boxes)} detections", width='stretch')
         else:
             st.info("No detection results for this frame.")
 
     with tab_map["Segmentation"]:
         if r.segmentation:
             vis = draw_segmentation(r.frame, r.segmentation)
-            st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.segmentation.masks)} masks", use_container_width=True)
+            st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption=f"{len(r.segmentation.masks)} masks", width='stretch')
         else:
             st.info("No segmentation results for this frame.")
 
@@ -1057,7 +1062,7 @@ def _render_results(results: list[FrameResult], info: dict, nav_timeline: Naviga
                         }
                     )
                 st.write("Frames with hands/interactions:")
-                st.dataframe(frame_rows, use_container_width=True, hide_index=True)
+                st.dataframe(frame_rows, width='stretch', hide_index=True)
 
             if hand_poses:
                 st.dataframe(
@@ -1142,7 +1147,7 @@ def _render_results(results: list[FrameResult], info: dict, nav_timeline: Naviga
                         ]
                     )
                 vis = draw_temporal_changes(r.frame, tc)
-                st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption="Temporal Changes Overlay", use_container_width=True)
+                st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB), caption="Temporal Changes Overlay", width='stretch')
             else:
                 st.info("No temporal changes for this frame.")
 
@@ -1218,7 +1223,7 @@ def _render_results(results: list[FrameResult], info: dict, nav_timeline: Naviga
                     rcols[1].metric("Correct", f"{metrics['correct']} / {metrics['total_labels']}")
                     rcols[2].metric("Labels Evaluated", metrics["total_labels"])
                     if metrics["details"]:
-                        st.dataframe(metrics["details"], use_container_width=True)
+                        st.dataframe(metrics["details"], width='stretch')
 
     st.divider()
     export_btn = st.button("Export Annotated Video", key=f"{key_prefix}_export_btn")
@@ -1451,8 +1456,8 @@ with st.sidebar:
         disabled=not use_interactions,
     )
 
-    load_btn = st.button("Load Selected", type="primary", use_container_width=True)
-    unload_btn = st.button("Unload All", use_container_width=True)
+    load_btn = st.button("Load Selected", type="primary", width='stretch')
+    unload_btn = st.button("Unload All", width='stretch')
 
     if not st.session_state["live_loaded"] and not st.session_state["live_auto_loaded"]:
         with st.spinner("Auto-loading defaults..."):

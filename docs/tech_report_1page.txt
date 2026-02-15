@@ -1,0 +1,36 @@
+HUMOS — World2Data: Navigation Ground Truth from Video
+
+HUMOS is an AI-powered perception pipeline that converts raw video into structured, navigation-relevant ground truth for humanoid robots. It detects and tracks objects across frames, estimates object/navigation state (for example open/closed/ajar/blocked), detects hand-object interactions, and exports temporal annotations with evaluation metrics.
+
+What HUMOS Does
+- Object detection + persistent tracking IDs across time
+- Segmentation for precise object boundaries (SAM3, FastSAM, RF-DETR Seg)
+- Zero-shot state classification (SigLIP) for fast open/closed-style labels
+- VLM reasoning (LFM2.5-VL backends) for richer semantic state/affordance output
+- Temporal change detection and navigation timeline generation
+- Ground truth JSON export and accuracy evaluation against manual labels
+- Live webcam inference with auto-record + post-stop analysis
+- Per-stage timing breakdown for performance profiling
+
+Core UX
+HUMOS provides two Streamlit workflows:
+1) Upload workflow (`app.py`): run full multi-model analysis and inspect synchronized tabs
+2) Live workflow (`pages/live.py`): real-time inference overlay, auto-recording, then full post-analysis on stop
+
+Views include: Original, Combined, Tracking, Detections, Segmentation, Interactions, VLM Output, Temporal Changes, Ground Truth JSON, and Accuracy.
+
+Technical Stack
+Python, Streamlit, OpenCV, PyTorch, Ultralytics YOLO (v8/v11), RF-DETR, FastSAM, SAM3, MediaPipe, SigLIP, and LFM2.5-VL (Transformers/ONNX/MLX).
+
+Quick Start
+uv sync
+streamlit run app.py
+
+If `uv` is unavailable:
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+streamlit run app.py
+
+Impact
+HUMOS bridges perception and robot actionability: it transforms raw video into machine-usable temporal knowledge for planning, imitation learning data generation, behavior debugging, and navigation/manipulation evaluation.

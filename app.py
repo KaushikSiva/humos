@@ -177,9 +177,9 @@ with st.sidebar:
     # --- Load / Unload ---
     col1, col2 = st.columns(2)
     with col1:
-        load_btn = st.button("Load Models", type="primary", use_container_width=True)
+        load_btn = st.button("Load Models", type="primary", width='stretch')
     with col2:
-        unload_btn = st.button("Unload All", use_container_width=True)
+        unload_btn = st.button("Unload All", width='stretch')
 
     if load_btn:
         with st.spinner("Loading models..."):
@@ -331,7 +331,7 @@ if uploaded:
             if len(results) % 5 == 1:
                 preview = draw_all(result.frame, result)
                 frame_display.image(cv2.cvtColor(preview, cv2.COLOR_BGR2RGB),
-                                    caption=f"Frame {result.frame_idx}", use_container_width=True)
+                                    caption=f"Frame {result.frame_idx}", width='stretch')
 
         progress.progress(1.0, text="Done!")
         st.session_state["results"] = results
@@ -368,7 +368,7 @@ if uploaded:
                     )
             if timing_rows:
                 timing_rows = sorted(timing_rows, key=lambda x: x["mean_s"], reverse=True)
-                st.dataframe(timing_rows, use_container_width=True, hide_index=True)
+                st.dataframe(timing_rows, width='stretch', hide_index=True)
 
         frame_idx = st.slider("Frame", 0, len(results) - 1, 0,
                                format=f"Frame %d / {len(results) - 1}")
@@ -464,7 +464,7 @@ if uploaded:
                         })
                 if all_transitions:
                     all_transitions.sort(key=lambda x: x["Frame"])
-                    st.dataframe(all_transitions, use_container_width=True)
+                    st.dataframe(all_transitions, width='stretch')
                 else:
                     st.info("No state transitions detected. Try processing more frames or adjusting VLM skip.")
 
@@ -481,7 +481,7 @@ if uploaded:
                                 "State": entry.state,
                             })
                 if frame_states:
-                    st.dataframe(frame_states, use_container_width=True)
+                    st.dataframe(frame_states, width='stretch')
                 else:
                     st.info("No navigation objects have state data at this frame.")
 
@@ -493,7 +493,7 @@ if uploaded:
         # ============================================================
         with tab_map["Original"]:
             st.image(cv2.cvtColor(r.frame, cv2.COLOR_BGR2RGB),
-                     caption=f"Frame {r.frame_idx}", use_container_width=True)
+                     caption=f"Frame {r.frame_idx}", width='stretch')
 
         # ============================================================
         # COMBINED TAB
@@ -501,7 +501,7 @@ if uploaded:
         with tab_map["Combined"]:
             vis = draw_all(r.frame, r)
             st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB),
-                     caption=f"Combined — Frame {r.frame_idx}", use_container_width=True)
+                     caption=f"Combined — Frame {r.frame_idx}", width='stretch')
             if r.timings:
                 st.caption("Per-frame timing (seconds)")
                 st.json({k: round(v, 4) for k, v in r.timings.items()})
@@ -515,7 +515,7 @@ if uploaded:
                     vis = draw_tracking(r.frame, r.tracking)
                     st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB),
                              caption=f"{len(r.tracking.boxes)} tracked objects",
-                             use_container_width=True)
+                             width='stretch')
                     if r.tracking.boxes:
                         st.dataframe([
                             {"track_id": b.track_id, "class": b.class_name,
@@ -533,7 +533,7 @@ if uploaded:
             if r.detection:
                 vis = draw_detections(r.frame, r.detection)
                 st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB),
-                         caption=f"{len(r.detection.boxes)} detections", use_container_width=True)
+                         caption=f"{len(r.detection.boxes)} detections", width='stretch')
                 if r.detection.boxes:
                     st.dataframe([
                         {"class": b.class_name, "confidence": f"{b.confidence:.3f}",
@@ -550,7 +550,7 @@ if uploaded:
             if r.segmentation:
                 vis = draw_segmentation(r.frame, r.segmentation)
                 st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB),
-                         caption=f"{len(r.segmentation.masks)} masks", use_container_width=True)
+                         caption=f"{len(r.segmentation.masks)} masks", width='stretch')
             else:
                 st.info("No segmentation results for this frame.")
 
@@ -586,7 +586,7 @@ if uploaded:
                             }
                         )
                     st.write("Frames with hands/interactions:")
-                    st.dataframe(frame_rows, use_container_width=True, hide_index=True)
+                    st.dataframe(frame_rows, width='stretch', hide_index=True)
 
                 if hand_poses:
                     st.write(f"Hands: {len(hand_poses)}")
@@ -694,7 +694,7 @@ if uploaded:
 
                     vis = draw_temporal_changes(r.frame, tc)
                     st.image(cv2.cvtColor(vis, cv2.COLOR_BGR2RGB),
-                             caption="Temporal Changes Overlay", use_container_width=True)
+                             caption="Temporal Changes Overlay", width='stretch')
                 else:
                     st.info("No temporal changes for this frame (requires VLM + temporal diff enabled).")
 

@@ -6,5 +6,6 @@ import models.segmentation.sam3
 import models.segmentation.fastsam
 import models.vlm.lfm25
 import models.vlm.gemini3
+import models.vlm.lmstudio_cosmos
 import models.tracking.yolo_tracker
 import models.state.siglip_classifier

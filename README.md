@@ -1,4 +1,4 @@
-# World2Data — Navigation Ground Truth from Video
+# HUMOS — Navigation Ground Truth from Video
 
 AI-powered pipeline that converts raw video into structured, navigation-relevant ground truth for humanoid robots. Detects objects, tracks them across frames, classifies navigation states (open/closed/blocked), and exports temporal ground truth with accuracy evaluation.
 

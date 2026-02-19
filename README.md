@@ -2,6 +2,12 @@
 
 AI-powered pipeline that converts raw video into structured, navigation-relevant ground truth for humanoid robots. Detects objects, tracks them across frames, classifies navigation states (open/closed/blocked), and exports temporal ground truth with accuracy evaluation.
 
+[![Demo Video 1](https://img.youtube.com/vi/blGuTlhvjdg/hqdefault.jpg)](https://youtu.be/blGuTlhvjdg)
+[![Demo Video 2](https://img.youtube.com/vi/m3ZzBnWlMSA/hqdefault.jpg)](https://youtu.be/m3ZzBnWlMSA)
+
+
+
+
 ## Quick Start
 
 ```bash
